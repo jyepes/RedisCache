@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = "DropDownList";
+}
+
+<h2>DropDownList</h2>
+<div style="margin-top: 50px;" class="col-md-12">
+    <div class="row">
+        <div class="col-md-6">
+            Country
+            @Html.DropDownList("DrpCountry", new SelectList(string.Empty, "Value", "Text"), "Please select a Country", new { @class = "form-control" })
+        </div>
+        <div class="col-md-6">
+            State
+            @Html.DropDownList("DrpState", new SelectList(string.Empty, "Value", "Text"), "Please select a State", new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
+        </div>
+    </div>
+</div>
+<br />
+<script type="text/javascript">
+
+    $(document).ready(function ()
+    {
+        $.ajax({
+            url: '@Url.Action("GetCountryList", "DemoDropdown")',
+            type: "post",
+            dataType: 'json',
+            success: function (result) {
+                $.each(result, function (i, country)
+                {
+                    $("#DrpCountry").append('<option value="' + country.Id + '">' + country.CountryName + '</option>');
+                });
+
+            },
+            error: function (err) {
+                alert(err.statusText);
+            }
+        });
+
+        $("#DrpCountry").change(function ()
+        {
+            $.ajax({
+                url: '/DemoDropdown/GetStateList',
+                type: "post",
+                dataType: 'json',
+                data: { countryId: $("#DrpCountry").val() },
+                success: function (result) {
+                    $("#DrpState").empty();
+                    $("#DrpState").append('<option value="-1">Please select a State</option>');
+                    $.each(result, function (i, state)
+                    {
+                        $("#DrpState").append('<option value="' + state.Id + '">' + state.StateName + '</option>');
+                    });
+
+                },
+                error: function (err) {
+                    alert(err.statusText);
+                }
+            });
+        });
+
+    });
+
+
+</script>
